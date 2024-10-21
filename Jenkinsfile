@@ -26,7 +26,7 @@ pipeline {
                 '''
                 sh '''
                     docker run --name zap \
-                    -v /mnt/d/Desktop/ABC/abcd-student/zap:/zap/wrk/:rw \
+                    -v /mnt/c/Users/MZ/ABC/abcd-student/zap:/zap/wrk/:rw \
                     -e JAVA_OPTS="-Xms512m -Xmx2g" \
                     -t ghcr.io/zaproxy/zaproxy:stable \
                     bash -c "zap.sh -cmd -addonupdate; \
