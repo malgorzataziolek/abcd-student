@@ -29,15 +29,19 @@ pipeline {
             }
         }
         stage('ZAP Passive scan') {
-            steps {
+             steps {
                 sh '''
-                    docker run --name zap \
+                    docker run --name zap -d \
                     --add-host=host.docker.internal:host-gateway \
-                    -v /mnt/c/Users/MZ/ABC/abcd-student/.zap:/zap/wrk/:rw \
-                    -e JAVA_OPTS="-Xms512m -Xmx2g" \
-                    -t ghcr.io/zaproxy/zaproxy:stable bash \
-                    -c "zap.sh -cmd -addonupdate; zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta -autorun /zap/wrk/passive.yaml" \
-                    || true
+                    -v /mnt/c/Users/MZ/ABC/abcd-student/zap:/zap/wrk/:rw \
+                    -e JAVA_OPTS="-Xms512m -Xmx4g" \
+                    -t ghcr.io/zaproxy/zaproxy:stable
+                '''
+                sh 'sleep 20'
+                sh '''
+                    docker exec zap zap.sh -cmd -addonupdate
+                    docker exec zap zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta
+                    docker exec zap zap.sh -cmd -autorun /zap/wrk/passive.yaml
                 '''
             }
             post {
