@@ -17,20 +17,27 @@ pipeline {
                 sh 'mkdir -p results/'
             }
         }
-        stage('DAST') {
+
+        stage('Run Juice Shop') {
             steps {
+                echo 'Run Juice Shop'
                 sh '''
                     docker run --name juice-shop -d --rm \
                     -p 3000:3000 bkimminich/juice-shop
                     sleep 40
                 '''
+            }
+        }
+        stage('ZAP Passive scan') {
+            steps {
                 sh '''
                     docker run --name zap \
-                    -v /mnt/c/Users/MZ/ABC/abcd-student/zap:/zap/wrk/:rw \
+                    --add-host=host.docker.internal:host-gateway \
+                    -v /mnt/c/Users/MZ/ABC/abcd-student/.zap:/zap/wrk/:rw \
                     -e JAVA_OPTS="-Xms512m -Xmx2g" \
-                    -t ghcr.io/zaproxy/zaproxy:stable \
-                    bash -c "zap.sh -cmd -addonupdate; \
-                    zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta -autorun /zap/wrk/passive.yaml" || true
+                    -t ghcr.io/zaproxy/zaproxy:stable bash \
+                    -c "zap.sh -cmd -addonupdate; zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta -autorun /zap/wrk/passive.yaml" \
+                    || true
                 '''
             }
             post {
