@@ -22,13 +22,15 @@ pipeline {
                 sh '''
                     docker run --name juice-shop -d --rm \
                     -p 3000:3000 bkimminich/juice-shop
-                    sleep 20
+                    sleep 40
                 '''
                 sh '''
                     docker run --name zap \
                     -v /mnt/d/Desktop/ABC/abcd-student/zap:/zap/wrk/:rw \
+                    -e JAVA_OPTS="-Xms512m -Xmx2g" \
                     -t ghcr.io/zaproxy/zaproxy:stable \
-                    bash -c "zap.sh -cmd -addonupdate; zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta -autorun /zap/wrk/passive.yaml" || true
+                    bash -c "zap.sh -cmd -addonupdate; \
+                    zap.sh -cmd -addoninstall communityScripts -addoninstall pscanrulesAlpha -addoninstall pscanrulesBeta -autorun /zap/wrk/passive.yaml" || true
                 '''
             }
             post {
