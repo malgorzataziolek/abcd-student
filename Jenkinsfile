@@ -33,7 +33,7 @@ pipeline {
                 sh '''
                     docker run --name zap -d \
                     --add-host=host.docker.internal:host-gateway \
-                    -v /mnt/c/Users/MZ/ABC/abcd-student/zap:/zap/wrk/:rw \
+                    -v /mnt/c/Users/MZ/ABC/abcd-student/.zap:/zap/wrk/:rw \
                     -e JAVA_OPTS="-Xms512m -Xmx4g" \
                     -t ghcr.io/zaproxy/zaproxy:stable
                 '''
