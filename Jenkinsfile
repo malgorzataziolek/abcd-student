@@ -23,10 +23,16 @@ pipeline {
         //         sh 'osv-scanner scan --lockfile package-lock.json --format json --output results/osv-scanner-output.json || true'
         //     }
         // }
-        stage('Trufflehog scan'){
+        // stage('Trufflehog scan'){
+        //     steps{
+        //         echo 'Starting trufflehog scan...'
+        //         sh 'trufflehog git file://. --branch main --only-verified --json > results/trufflehog-results.json'
+        //     }
+        // }
+        stage('Semgrep scan'){
             steps{
-                echo 'Starting trufflehog scan...'
-                sh 'trufflehog git file://. --branch main --only-verified --json > results/trufflehog-results.json'
+                echo 'Starting Semgrep scan...'
+                sh 'semgrep --config=auto --output=results/semgrep-report.json --json || true'
             }
         }
 
@@ -75,7 +81,8 @@ pipeline {
             echo 'Sending artifacts to the DefectDojo..'
             // defectDojoPublisher(artifact: 'results/zap_xml_report.xml', productName: 'Juice Shop', scanType: 'ZAP Scan', engagementName: 'gosiaziolek1223@icloud.com')
             // defectDojoPublisher(artifact: 'results/osv-scanner-output.json', productName: 'Juice Shop', scanType: 'OSV Scan', engagementName: 'gosiaziolek1223@icloud.com')
-            defectDojoPublisher(artifact: 'results/trufflehog-results.json', productName: 'Juice Shop', scanType: 'Trufflehog Scan', engagementName: 'gosiaziolek1223@icloud.com')
+            // defectDojoPublisher(artifact: 'results/trufflehog-results.json', productName: 'Juice Shop', scanType: 'Trufflehog Scan', engagementName: 'gosiaziolek1223@icloud.com')
+            defectDojoPublisher(artifact: 'results/semgrep-report.json', productName: 'Juice Shop', scanType: 'Semgrep JSON Report', engagementName: 'gosiaziolek1223@icloud.com')
         }
     }
 }
